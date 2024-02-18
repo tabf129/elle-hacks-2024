@@ -1,24 +1,23 @@
 from google.cloud import speech
 
 
-def transcribe_audio(content):
+def transcribe_audio(audio_bytes):
     client = speech.SpeechClient()
 
-    audio = speech.RecognitionAudio(content=content)
+    # Loads the audio into memory
+    audio = speech.RecognitionAudio(content=audio_bytes)
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=16000,
+        sample_rate_hertz=16000,  # Adjust this value if necessary
         language_code="en-US",
     )
 
+    # Detects speech in the audio file
     response = client.recognize(config=config, audio=audio)
-    for result in response.results:
-        # The first alternative is the most likely one for this portion.
-        print(f"Transcript: {result.alternatives[0].transcript}")
 
-    return response
-
-
+    # Gather the transcription and return it
+    transcripts = [result.alternatives[0].transcript for result in response.results]
+    return transcripts
 
 
 # EOF
